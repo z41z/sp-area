@@ -1,0 +1,23 @@
+{
+  "name": "sp-area",
+  "version": "1.0.0",
+  "description": "根据区划代码找关联区划。",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build&&webpack --mode production --config=webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/z41z/sp-area.git"
+  },
+  "keywords": [
+    "area",
+    "china-district-code"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/z41z/sp-area/issues"
+  },
+  "homepage": "https://github.com/z41z/sp-area#readme"
+}

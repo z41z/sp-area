@@ -5,7 +5,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: 'index.min.js',
-    library: "__Area",
+    library: "__AREA",
   },
   resolve: {
     extensions: ['.js']

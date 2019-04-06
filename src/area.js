@@ -13,7 +13,7 @@ const area = (option = {}) => {
     target = '',
     type = 'children',
     hasOwn = false,
-    formatter = function () { }
+    formatter = ''
   } = option;
 
   /**
@@ -59,7 +59,7 @@ const area = (option = {}) => {
         flag = item.code.indexOf(substr) > -1 && !(item.code % value);
         return hasOwn ? (flag) : (flag && item.code != targetStr);
         break;
-      
+
       // 兄弟区划
       case 'siblings':
         // 省
@@ -82,7 +82,7 @@ const area = (option = {}) => {
         }
         return hasOwn ? (flag) : (flag && item.code != targetStr);
         break;
-      
+
       // 父区划
       case 'parent':
         // 省
@@ -107,7 +107,7 @@ const area = (option = {}) => {
         break;
     }
   });
-  return formatter(result);
+  return typeof formatter === 'function' ? formatter(result) : result;
 }
 
 /**
@@ -122,7 +122,7 @@ const getCodeByName = (data, name) => {
       code = item.code;
     }
   })
-  return ""+code;
+  return "" + code;
 }
 
 module.exports.default = module.exports = area;

@@ -1,6 +1,6 @@
 {
   "name": "sp-area",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "根据区划代码找关联区划。",
   "main": "index.js",
   "scripts": {

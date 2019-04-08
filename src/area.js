@@ -20,94 +20,103 @@ const area = (option = {}) => {
    * 将传入区划数据转换成标准的{区划代码:区划名称}格式，匹配数字和汉字
    */
   let areaData = [];
-  origion.forEach(item => {
-    let code = JSON.stringify(item).replace(/\D+/ig, '');
-    let name = JSON.stringify(item).replace(/[^\u4e00-\u9fa5]+/ig, '');
-    areaData.push({
-      code,
-      name
+  if (typeof origion === 'object') {
+    // 传入的origion区划数据为对象则转换成数组
+    if (!Array.isArray(origion)) {
+      origion = Object.entries(origion);
+    }
+    origion.forEach(item => {
+      let code = JSON.stringify(item).replace(/\D+/ig, '');
+      let name = JSON.stringify(item).replace(/[^\u4e00-\u9fa5]+/ig, '');
+      areaData.push({
+        code,
+        name
+      });
+    })
+
+    let result = areaData.filter(item => {
+      let targetStr;
+      if (+target) {
+        targetStr = ("" + target);
+      }
+      else {
+        targetStr = getCodeByName(areaData, target)
+      }
+      let substr, value, flag;
+      switch (type) {
+        // 子区划
+        case 'children':
+          // 省
+          if (!(targetStr % 1e4)) {
+            substr = targetStr.substring(0, 2);
+            value = 1e2;
+          }
+          // 市
+          else if (!(targetStr % 1e2)) {
+            substr = targetStr.substring(0, 4);
+            value = 1;
+          }
+          // 区县
+          else {
+            substr = targetStr;
+            value = 1;
+          }
+          flag = item.code.indexOf(substr) > -1 && !(item.code % value);
+          return hasOwn ? (flag) : (flag && item.code != targetStr);
+          break;
+
+        // 兄弟区划
+        case 'siblings':
+          // 省
+          if (!(targetStr % 1e4)) {
+            substr = '';
+            value = 1e4;
+            flag = !(item.code % 1e4);
+          }
+          // 市
+          else if (!(targetStr % 1e2)) {
+            substr = targetStr.substring(0, 2);
+            value = 1e2;
+            flag = item.code.indexOf(substr) > -1 && !(item.code % 1e2) && (item.code % 1e4);
+          }
+          // 区县
+          else {
+            substr = targetStr.substring(0, 4);
+            value = 1;
+            flag = item.code.indexOf(substr) > -1 && (item.code % 10);
+          }
+          return hasOwn ? (flag) : (flag && item.code != targetStr);
+          break;
+
+        // 父区划
+        case 'parent':
+          // 省
+          if (!(targetStr % 1e4)) {
+            substr = '';
+            value = 1e5;
+          }
+          // 市
+          else if (!(targetStr % 1e2)) {
+            substr = targetStr.substring(0, 2);
+            value = 1e4;
+          }
+          // 区县
+          else {
+            substr = targetStr.substring(0, 4);
+            value = 1e2;
+          }
+          return item.code.indexOf(substr) > -1 && !(item.code % value);
+          break;
+        default:
+          return [];
+          break;
+      }
     });
-  })
-
-  let result = areaData.filter(item => {
-    let targetStr;
-    if (+target) {
-      targetStr = ("" + target);
-    }
-    else {
-      targetStr = getCodeByName(areaData, target)
-    }
-    let substr, value, flag;
-    switch (type) {
-      // 子区划
-      case 'children':
-        // 省
-        if (!(targetStr % 1e4)) {
-          substr = targetStr.substring(0, 2);
-          value = 1e2;
-        }
-        // 市
-        else if (!(targetStr % 1e2)) {
-          substr = targetStr.substring(0, 4);
-          value = 1;
-        }
-        // 区县
-        else {
-          substr = targetStr;
-          value = 1;
-        }
-        flag = item.code.indexOf(substr) > -1 && !(item.code % value);
-        return hasOwn ? (flag) : (flag && item.code != targetStr);
-        break;
-
-      // 兄弟区划
-      case 'siblings':
-        // 省
-        if (!(targetStr % 1e4)) {
-          substr = '';
-          value = 1e4;
-          flag = !(item.code % 1e4);
-        }
-        // 市
-        else if (!(targetStr % 1e2)) {
-          substr = targetStr.substring(0, 2);
-          value = 1e2;
-          flag = item.code.indexOf(substr) > -1 && !(item.code % 1e2) && (item.code % 1e4);
-        }
-        // 区县
-        else {
-          substr = targetStr.substring(0, 4);
-          value = 1;
-          flag = item.code.indexOf(substr) > -1 && (item.code % 10);
-        }
-        return hasOwn ? (flag) : (flag && item.code != targetStr);
-        break;
-
-      // 父区划
-      case 'parent':
-        // 省
-        if (!(targetStr % 1e4)) {
-          substr = '';
-          value = 1e5;
-        }
-        // 市
-        else if (!(targetStr % 1e2)) {
-          substr = targetStr.substring(0, 2);
-          value = 1e4;
-        }
-        // 区县
-        else {
-          substr = targetStr.substring(0, 4);
-          value = 1e2;
-        }
-        return item.code.indexOf(substr) > -1 && !(item.code % value);
-        break;
-      default:
-        return [];
-        break;
-    }
-  });
-  return typeof formatter === 'function' ? formatter(result) : result;
+    return typeof formatter === 'function' ? formatter(result) : result;
+  }
+  else {
+    return [];
+  }
 }
 
 /**
